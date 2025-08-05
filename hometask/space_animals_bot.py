@@ -25,12 +25,21 @@ def get_random_spacex_launch():
         }
     return None
 
+# === ANIMAL FACT ===
+def get_random_animal_fact():
+    url = "https://catfact.ninja/fact"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json().get("fact", "Факт не найден.")
+    return "Не удалось получить факт."
+
 @dp.message(CommandStart())
 async def start(message: Message):
     await message.answer(
         "Привет! Я научный бот 🤖\n"
         "Доступные команды:\n"
         "/spacex - Последний запуск SpaceX 🚀\n"
+        "/animal_fact — Факт про животное 🐾\n"
     )
 
 @dp.message(Command("spacex"))
@@ -41,6 +50,11 @@ async def send_space_info(message: Message):
         await message.answer_photo(photo=launch['patch'], caption=text)
     else:
         await message.answer("Не удалось получить данные о запуске SpaceX.")
+
+@dp.message(Command("animal_fact"))
+async def send_animal_fact(message: Message):
+    fact = get_random_animal_fact()
+    await message.answer(f"🐾 Факт: {fact}")
 
 async def main():
     await dp.start_polling(bot)
